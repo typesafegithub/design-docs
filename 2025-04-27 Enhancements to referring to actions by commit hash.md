@@ -1,5 +1,15 @@
 # Enhancements to referring to actions by commit hash
 
+<!-- TOC -->
+* [Enhancements to referring to actions by commit hash](#enhancements-to-referring-to-actions-by-commit-hash)
+  * [Related items](#related-items)
+  * [Problem](#problem)
+  * [Out of scope](#out-of-scope)
+    * [Pinning to commits in version catalog, to have stable typings](#pinning-to-commits-in-version-catalog-to-have-stable-typings)
+    * [Pinning to a specific binding (e.g. by JAR's checksum)](#pinning-to-a-specific-binding-eg-by-jars-checksum)
+  * [Proposed solution](#proposed-solution)
+<!-- TOC -->
+
 ## Related items
 
 * a feature request: [[typesafegithub/github-workflows-kt] [Core feature request] Pinning action versions to commit hashes updateable by bots](https://github.com/typesafegithub/github-workflows-kt/issues/1691)
