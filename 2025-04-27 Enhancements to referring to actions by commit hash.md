@@ -98,3 +98,52 @@ Recommended workarounds are
   way makes using dependency updating bots extremely hard
 
 ## Proposed solution
+
+Add two new ways of consuming an action binding:
+
+### 1. With validation of (version, commit hash) pair
+
+Example:
+
+```kotlin
+@file:Repository("https://bindings.krzeminski.it")
+@file:DependsOn("actions:checkout__commit:v4.1.2__85e6279cec87321a52edac9c87bce653a07cf6c2")
+```
+
+which would end up in the YAML as:
+
+```yaml
+- uses: actions/checkout@85e6279cec87321a52edac9c87bce653a07cf6c2 # v4.1.2
+```
+
+Additionally, the bindings server would validate if the version ref (here: `v4.1.2`) points to the mentioned commit
+hash. Thanks to the extra validation, the user an extra assurance than with the YAML approach - the version is for sure
+correct.
+
+Since the version is known and validated, the server can also look up the typing in the catalog.
+
+### 2. Without validation of (version, commit hash) pair
+
+Example:
+
+```kotlin
+@file:Repository("https://bindings.krzeminski.it")
+@file:DependsOn("actions:checkout__commit_lenient:v4.1.2__85e6279cec87321a52edac9c87bce653a07cf6c2")
+```
+
+which also would end up in the YAML as:
+
+```yaml
+- uses: actions/checkout@85e6279cec87321a52edac9c87bce653a07cf6c2 # v4.1.2
+```
+
+It's similar to the above approach, with these differences:
+* the version is just used to add a comment in the YAML - no validation is performed
+* the version is used to look up the typings in the catalog
+
+This mode is created to closer resemble how the YAML approach works. Because of no extra validation, it allows handling
+certain edge cases, when the commit hash is intentionally out of sync with the version. For example: the version tag was
+deleted because of a security vulnerability, and the user prefers to keep the action usage pinned to the commit hash to
+keep the workflow working, as opposed to failing in the consistency check job.
+
+This mode is made more verbose in the code on purpose, to promote the first, safer approach.
