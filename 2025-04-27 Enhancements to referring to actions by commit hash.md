@@ -16,6 +16,56 @@
 
 ## Problem
 
+When consuming an action through the bindings server, using the most popular pattern, like so:
+
+```kotlin
+@file:Repository("https://bindings.krzeminski.it")
+@file:DependsOn("actions:checkout:v4")
+```
+
+the script may get a different artifact each time the script is compiled, and a different action may be run when the
+workflow is run.
+
+It's because unlike with Maven Central, the Maven-compatible custom bindings server doesn't have an inherent property of
+artifact immutability (on why it's not possible, see
+[Pinning to a specific binding (e.g. by JAR's checksum)](#pinning-to-a-specific-binding-eg-by-jars-checksum)). The `v4`
+version is usually modeled as a moving tag/branch, pointing to the newest released version from major version 4.
+
+Even tags with full version:
+
+```kotlin
+@file:DependsOn("actions:checkout:v4.1.2")
+```
+
+aren't guaranteed to be immutable. They should be by convention, but there's no mechanism to enforce it.
+
+It's sometimes desired to pin to a specific action logic to ensure that no changes are made without the user knowing
+about it, and to cope with supply chain attacks like
+[this one](https://unit42.paloaltonetworks.com/github-actions-supply-chain-attack/).
+
+That's why users wanting to be 100% sure the same action logic is run every time, use commit hashes like so:
+
+```yaml
+- uses: actions/checkout@85e6279cec87321a52edac9c87bce653a07cf6c2
+```
+
+which is also possible through github-workflows-kt:
+
+```kotlin
+@file:DependsOn("actions:checkout:85e6279cec87321a52edac9c87bce653a07cf6c2")
+```
+
+However, there are the following problems:
+1. If an action's typing is stored in the typing catalog, it's not used during binding generation, which in practice
+   means that all inputs are of type `String`.
+2. It's not possible to make it dependency updating bots-friendly. With the YAML approach, one can write:
+   ```yaml
+   - uses: actions/checkout@85e6279cec87321a52edac9c87bce653a07cf6c2 # v4.1.2
+   ```
+   and the bots will generally suggest updates to the hash and the version in the comment. With github-workflows-kt,
+   not only the bots won't learn about available versions accessible through the commit hashes, but also the comment
+   with the version won't end up in the YAML.
+
 ## Out of scope
 
 ### Pinning to commits in version catalog, to have stable typings
