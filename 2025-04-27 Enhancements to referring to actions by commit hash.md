@@ -40,7 +40,11 @@ way from user's point of view is not possible. It would be also challenging to e
 server doesn't change - in practice, it's not possible as even a subtle change e.g. in tooling used to build the JAR may
 lead to changing the checksum.
 
-A recommended workaround is fetching the binding to a static location, and consuming it from the script. However, this
-way makes using dependency updating bots extremely hard.
+Recommended workarounds are
+* private hosting of the bindings server, either by building it from source (then one can pin the
+  [repo](https://github.com/typesafegithub/github-workflows-kt)'s commit) or pinning to an image's digest in
+  [DockerHub](https://hub.docker.com/r/krzema12/github-workflows-kt-jit-binding-server/tags)
+* fetching the binding to a static location, and consuming it from the script. However, this
+  way makes using dependency updating bots extremely hard
 
 ## Proposed solution
