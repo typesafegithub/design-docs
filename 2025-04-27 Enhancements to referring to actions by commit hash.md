@@ -75,7 +75,7 @@ For better reproducibility, users might want to specify a particular commit in
 stored in the catalog are versioned by the major versions, so e.g. if a typing change is required because of a change in
 the action between v1.0 and v1.1, it may be a breaking change for the Kotlin binding consumer.
 
-To solve it, we could provide a way to freeze not only the action's commit has, but also the catalog typing's commit
+To solve it, we could provide a way to freeze not only the action's commit hash, but also the catalog typing's commit
 hash. However, this problem is neglected for the purpose of this document because demand for this feature is unknown
 (there is no signal about it from the users), and it would lead to further complicating the system.
 
@@ -107,7 +107,7 @@ Example:
 
 ```kotlin
 @file:Repository("https://bindings.krzeminski.it")
-@file:DependsOn("actions:checkout__commit:v4.1.2__85e6279cec87321a52edac9c87bce653a07cf6c2")
+@file:DependsOn("actions:checkout___commit:v4.1.2__85e6279cec87321a52edac9c87bce653a07cf6c2")
 ```
 
 which would end up in the YAML as:
@@ -117,7 +117,7 @@ which would end up in the YAML as:
 ```
 
 Additionally, the bindings server would validate if the version ref (here: `v4.1.2`) points to the mentioned commit
-hash. Thanks to the extra validation, the user an extra assurance than with the YAML approach - the version is for sure
+hash. Thanks to the extra validation, the user has an extra assurance than with the YAML approach - the version is for sure
 correct.
 
 Since the version is known and validated, the server can also look up the typing in the catalog.
@@ -128,7 +128,7 @@ Example:
 
 ```kotlin
 @file:Repository("https://bindings.krzeminski.it")
-@file:DependsOn("actions:checkout__commit_lenient:v4.1.2__85e6279cec87321a52edac9c87bce653a07cf6c2")
+@file:DependsOn("actions:checkout___commit_lenient:v4.1.2__85e6279cec87321a52edac9c87bce653a07cf6c2")
 ```
 
 which also would end up in the YAML as:
@@ -144,6 +144,6 @@ It's similar to the above approach, with these differences:
 This mode is created to closer resemble how the YAML approach works. Because of no extra validation, it allows handling
 certain edge cases, when the commit hash is intentionally out of sync with the version. For example: the version tag was
 deleted because of a security vulnerability, and the user prefers to keep the action usage pinned to the commit hash to
-keep the workflow working, as opposed to failing in the consistency check job.
+keep the workflow working, as opposed to failing in the consistency check job. Or the user wants to use a newer hash with some fix that did not make it into a release yet.
 
 This mode is made more verbose in the code on purpose, to promote the first, safer approach.
